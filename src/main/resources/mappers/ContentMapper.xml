@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//org.mybatis/DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="my.remind.board4.mapper.ContentMapper">
+	<!-- 게시글 마지막 아이디 -->
+	<select id="getLastContentId" resultType="Integer">
+		SELECT boardNo
+		FROM board
+		ORDER BY boardNo DESC
+		LIMIT 1
+	</select>
+	<!-- 이전 게시글이 있는지 -->
+	<select id="existPrevContent" parameterType="Integer" resultType="Integer">
+		SELECT count(*)
+		FROM board
+		WHERE boardNo <![CDATA[ > ]]> #{boardNo}
+		ORDER BY boardNo DESC
+	</select>
+	<!-- 다음 게시글이 있는지 -->
+	<select id="existNextContent" parameterType="Integer" resultType="Integer">
+		SELECT count(*)
+		FROM board
+		WHERE BOARDnO <![CDATA[ < ]]> #{boardNo}
+		ORDER BY boardNo DESC
+	</select>
+
+	<!-- Multi Content -->
+	<select id="getContents" parameterType="HashMap" resultType="my.remind.board4.vo.ContentVO">
+		SELECT * 
+		FROM board 
+		WHERE boardAvailable = 1
+		ORDER BY boardNo DESC
+		LIMIT #{start}, #{count}
+	</select>
+	
+	<!-- Single Content -->
+	<select id="getContent" parameterType="Integer" resultType="my.remind.board4.vo.ContentVO">
+		SELECT *
+		FROM board
+		WHERE boardNo = #{boardNo}
+	</select>
+		
+	<!-- 게시글 삽입 -->
+	<insert id="insertContent" parameterType="my.remind.board4.vo.ContentVO">
+		INSERT INTO board(
+			boardNo,
+			boardTitle,
+			boardWriter,
+			boardDate,
+			boardContent
+		) VALUES (
+			#{boardNo},
+			#{boardTitle},
+			#{boardWriter},
+			#{boardDate},
+			#{boardContent}
+		)
+	</insert>
+	<!-- 게시글 수정 -->
+	<update id="updateContent" parameterType="my.remind.board4.vo.ContentVO">
+		UPDATE board
+		SET boardTitle = #{boardTitle},
+			boardDate = #{boardDate},
+			boardContent = #{boardContent}
+		WHERE boardNo = #{boardNo}
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="deleteContent" parameterType="Integer">
+		DELETE FROM board
+		WHERE boardNo = #{boardNo}
+	</delete>
+</mapper>
